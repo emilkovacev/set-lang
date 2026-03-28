@@ -31,11 +31,13 @@ A = {}
 
 ## 2. Nesting
 
-Sets can contain other sets.
+Sets can contain other sets. Each set must contain only unique values. Sets that contain 
+two equivilent values in the set is an error.
 
 ```
 A = {}
-B = {A, A}
+B = {{}}
+B = {A, B}
 ```
 
 ## 3. Single Set Operations
@@ -150,7 +152,7 @@ PRINT 0 CARTESION PRODUCT 1
 
 # Lexer
 
-The set-lexer parses a `.set` file and produces a stream of tuples with information about each 
+The set-lexer performs lexical analysis on a `.set` file and produces a stream of tuples with information about each 
 token.
 
 | Token Name | Description | Token values |
@@ -162,3 +164,32 @@ token.
 | operator | Operation symbols applied to sets and variables | `=` (assignment), `PRINT`, `CARDINALITY`, `ELEMENT OF`, `UNION`, `INTERSECTION`, `DIFFERENCE`, `CARTESIAN PRODUCT` |
 | comment | Code descriptions, no-op | `// ` (no multiline comments) |
 | whitespace | no-op | |
+
+# Parser
+
+The set-parser uses the set-lexer to parse the syntax of a `.set` file.
+
+| Syntax | Description | Example |
+| --- | --- | --- |
+| set | Initialize a set. Sets can be nested, and all elements of a set MUST be unique.| `{}`, `{{}}`, `{{}, {{}}}` |
+| expression | A sequence of sets and operations. Expressions have return values (sets). An expression without a return value will return the empty set `{}`. | `{} UNION {{}}`, `PRINT {}` |
+| assignment | Assign an expression to a variable. **Sets cannot be modified in-place** (e.g. without assignment). | `VAR = {}` |
+| print (operation) | A special operation that prints the output of an expression to stdout | `PRINT {{}, {{}}}` |
+
+# Code Generator
+
+The set-code-generator consists of three projects: set-analyzer, set-ir-generator, and set-target-generator.
+
+## Analyzer
+
+The set-analyzer inputs a `.set` file that has correct syntax (has already been run through the parser) and outputs an AST structure that describes the syntax of the file.
+
+## IR Generator
+
+The set-ir-generator inputs the AST from set-analyzer and outputs a `.set_ir` file that represents the logic of the analyzer using set-ir, an Intermediate Representation for set logic.
+
+All abstract code optimizations are made at this stage.
+
+## Target Generator
+
+The set-target-generator inputs the IR from the set-ir-generator and outputs a file with assembly code for the target machine.
