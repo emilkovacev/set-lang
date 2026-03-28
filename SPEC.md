@@ -150,7 +150,9 @@ PRINT 0 CARTESION PRODUCT 1
 {{0, {0, 0}}, {0, {0, 1}}, {1, {1, 0}}, {1, {1, 1}}}
 ```
 
-# Lexer
+# Compiler Architecture
+
+## Lexer
 
 The set-lexer performs lexical analysis on a `.set` file and produces a stream of tuples with information about each 
 token.
@@ -165,7 +167,7 @@ token.
 | comment | Code descriptions, no-op | `// ` (no multiline comments) |
 | whitespace | no-op | |
 
-# Parser
+## Parser
 
 The set-parser uses the set-lexer to parse the syntax of a `.set` file.
 
@@ -176,20 +178,48 @@ The set-parser uses the set-lexer to parse the syntax of a `.set` file.
 | assignment | Assign an expression to a variable. **Sets cannot be modified in-place** (e.g. without assignment). | `VAR = {}` |
 | print (operation) | A special operation that prints the output of an expression to stdout | `PRINT {{}, {{}}}` |
 
-# Code Generator
+## Code Generator
 
 The set-code-generator consists of three projects: set-analyzer, set-ir-generator, and set-target-generator.
 
-## Analyzer
+### 1. Analyzer
 
 The set-analyzer inputs a `.set` file that has correct syntax (has already been run through the parser) and outputs an AST structure that describes the syntax of the file.
 
-## IR Generator
+
+
+#### SET Type Structure and Algorithm
+
+Because sets are the only type in set-lang, it is the only type that needs to be implemented!
+
+00 (0) - {}
+01 (1) - {{}}
+10 (2) - {{}, {{}}}
+11 (3) - {{}, {{}}, {{{}}}}
+
+{{{}}, {}}
+
+```
+| --------------- |
+| m items (u32)   |
+| --------------- |
+| --------------- |
+| n nests (u32)   |
+| --------------- | ]
+|        .        | ]
+|        .        | ] m items
+|        .        | ]
+| --------------- | ]
+| n nests (u32)   |
+| --------------- |
+```
+
+### 2. IR Generator
 
 The set-ir-generator inputs the AST from set-analyzer and outputs a `.set_ir` file that represents the logic of the analyzer using set-ir, an Intermediate Representation for set logic.
 
 All abstract code optimizations are made at this stage.
 
-## Target Generator
+### 3. Target Generator
 
 The set-target-generator inputs the IR from the set-ir-generator and outputs a file with assembly code for the target machine.
