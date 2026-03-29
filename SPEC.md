@@ -154,7 +154,11 @@ PRINT 0 CARTESION PRODUCT 1
 
 # 2 Compiler Architecture
 
-## 2.1 Lexer
+## 2.1 Symbol Table
+
+Because set-lang does not have any concept of "scope", a symbol table is not needed, since all symbols are global.
+
+## 2.2 Lexer
 
 The set-lexer performs lexical analysis on a `.set` file and produces a stream of tuples with information about each 
 token.
@@ -169,7 +173,7 @@ token.
 | comment | Code descriptions, no-op | `// ` (no multiline comments) |
 | whitespace | no-op | |
 
-## 2.2 Parser
+## 2.3 Parser
 
 The set-parser uses the set-lexer to parse the syntax of a `.set` file.
 
@@ -180,15 +184,15 @@ The set-parser uses the set-lexer to parse the syntax of a `.set` file.
 | assignment | Assign an expression to a variable. **Sets cannot be modified in-place** (e.g. without assignment). | `VAR = {}` |
 | print (operation) | A special operation that prints the output of an expression to stdout | `PRINT {{}, {{}}}` |
 
-## 2.3 Code Generator
+## 2.4 Code Generator
 
 The set-code-generator consists of three projects: set-analyzer, set-ir-generator, and set-target-generator.
 
-## 2.4 Analyzer
+## 2.5 Analyzer
 
-The set-analyzer inputs a `.set` file that has correct syntax (has already been run through the parser) and outputs an AST structure that describes the syntax of the file.
+The set-analyzer inputs a `.set` file that has correct syntax (has already been run through the parser) and outputs an AST structure that describes the syntax of the file. The analyzer initializes and updates the 
 
-### 2.4.1 SET Type Struct
+### 2.5.1 SET Type Struct
 
 Because sets are the only type in set-lang, it is the only type that needs to be implemented!
 
@@ -215,19 +219,17 @@ When using u16, the maximum memory needed to store a set is:
                nest   8 bits
 ```
 
-This method is very efficient, since we can take advantage of the speed of bitwise operations, and use bitwise comparisons to check if an element exists, and compare sets with one another.
-
-We can also create arbitrarily large sets, simply by extending the array of u16 elements in the struct. And best of all, the struct doesn't need any padding!
+This method is very efficient, since we can take advantage of the speed of bitwise operations, and use bitwise comparisons to check if an element exists, and compare sets with one another. We can also create arbitrarily large sets, simply by extending the array of u16 elements in the struct. And best of all, the struct doesn't need any padding!
 
 The number of elements in this implementation of a set is strictly bounded by 2^16 (65,536).
 
-### 2. IR Generator
+## 2.6 IR Generator
 
 The set-ir-generator inputs the AST from set-analyzer and outputs a `.set_ir` file that represents the logic of the analyzer using set-ir, an Intermediate Representation for set logic.
 
 All abstract code optimizations are made at this stage.
 
-### 3. Target Generator
+## 2.7 Target Generator
 
 The set-target-generator inputs the IR from the set-ir-generator and outputs a file with assembly code for the target machine.
 
