@@ -66,6 +66,7 @@ pub fn lexer<'a>(program: &'a String) -> Vec<(Token, &'a str)> {
             None => match prev_token {
                 Some(t) => {
                     tokens.push(t);
+                    prev_token = None;
                     starting = ending - 1
                 }
                 None => ending += 1,
@@ -155,6 +156,30 @@ mod test_lexer {
     fn test_assignment() {
         let program = String::from("VAR = {}");
         let expected = Vec::from([
+            (Token::Variable, "VAR"),
+            (Token::Whitespace, " "),
+            (Token::Assignment, "="),
+            (Token::Whitespace, " "),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+        ]);
+        let actual = lexer(&program);
+        cmp_tokens(expected, actual);
+    }
+
+    #[test]
+    fn test_comments() {
+        let program = String::from("VAR = {} // VAR = {}\nVAR = {}");
+        let expected = Vec::from([
+            (Token::Variable, "VAR"),
+            (Token::Whitespace, " "),
+            (Token::Assignment, "="),
+            (Token::Whitespace, " "),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+            (Token::Whitespace, " "),
+            (Token::Comment, "// VAR = {}"),
+            (Token::Newline, "\n"),
             (Token::Variable, "VAR"),
             (Token::Whitespace, " "),
             (Token::Assignment, "="),
