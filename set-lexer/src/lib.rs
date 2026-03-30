@@ -7,7 +7,10 @@ pub enum Token {
     Assignment,
     LBracket,
     RBracket,
+    LParen,
+    RParen,
     Newline,
+    Comma,
     Print,
     Cardinality,
     ElementOf,
@@ -27,7 +30,10 @@ pub fn lexer<'a>(program: &'a String) -> Vec<(Token, &'a str)> {
     let lexer_table = Vec::from([
         (r"^[{]$", Token::LBracket),
         (r"^[}]$", Token::RBracket),
+        (r"^[(]$", Token::LParen),
+        (r"^[)]$", Token::RParen),
         (r"^[\n]+$", Token::Newline),
+        (r"^,$", Token::Comma),
         (r"^=$", Token::Assignment),
         (r"^PRINT$", Token::Print),
         (r"^CARDINALITY$", Token::Cardinality),
@@ -177,6 +183,44 @@ mod test_lexer {
             (Token::Whitespace, " "),
             (Token::LBracket, "{"),
             (Token::RBracket, "}"),
+        ]);
+        let actual = lexer(&program);
+        cmp_tokens(expected, actual);
+    }
+
+    #[test]
+    fn test_nested() {
+        let program = String::from("VAR = ({} UNION {{}}) INTERSECTION {{}, {{}}}\n");
+        let expected = Vec::from([
+            (Token::Variable, "VAR"),
+            (Token::Whitespace, " "),
+            (Token::Assignment, "="),
+            (Token::Whitespace, " "),
+            (Token::LParen, "("),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+            (Token::Whitespace, " "),
+            (Token::Union, "UNION"),
+            (Token::Whitespace, " "),
+            (Token::LBracket, "{"),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+            (Token::RBracket, "}"),
+            (Token::RParen, ")"),
+            (Token::Whitespace, " "),
+            (Token::Intersection, "INTERSECTION"),
+            (Token::Whitespace, " "),
+            (Token::LBracket, "{"),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+            (Token::Comma, ","),
+            (Token::Whitespace, " "),
+            (Token::LBracket, "{"),
+            (Token::LBracket, "{"),
+            (Token::RBracket, "}"),
+            (Token::RBracket, "}"),
+            (Token::RBracket, "}"),
+            (Token::Newline, "\n"),
         ]);
         let actual = lexer(&program);
         cmp_tokens(expected, actual);
