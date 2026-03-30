@@ -156,7 +156,14 @@ PRINT 0 CARTESION PRODUCT 1
 
 ## 2.1 Symbol Table
 
-Because set-lang does not have any concept of "scope", a symbol table is not needed, since all symbols are global.
+The only concept of scope is present is in parentheses, where as each parenthesis is evaluated, the result will need to be stored as an entry in the symbol table.
+
+To implement the symbol table, we can use a HashMap.
+
+| name | set_addr |
+| ---- | -------- |
+| A    | 0x050800 |
+| B    | 0x090800 |
 
 ## 2.2 Lexer
 
