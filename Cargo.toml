@@ -1,5 +1,5 @@
 [workspace]
 resolver = "3"
-members = ["set-lexer"]
+members = ["set-lexer", "set-parser"]
 
 
