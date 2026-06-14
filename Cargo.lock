@@ -189,6 +189,9 @@ dependencies = [
 [[package]]
 name = "set-parser"
 version = "0.1.0"
+dependencies = [
+ "set-lexer",
+]
 
 [[package]]
 name = "strsim"
