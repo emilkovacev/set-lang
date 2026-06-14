@@ -191,6 +191,18 @@ The set-parser uses the set-lexer to parse the syntax of a `.set` file.
 | assignment | Assign an expression to a variable. **Sets cannot be modified in-place** (e.g. without assignment). | `VAR = {}` |
 | print (operation) | A special operation that prints the output of an expression to stdout | `PRINT {{}, {{}}}` |
 
+### EBNF Description of set-lang
+
+| LHS | RHS |
+| --- | --- |
+| empty_set | `LBracket RBracket` |
+| set | `LBracket empty_set {Comma set} RBracket` |
+| expression | `[UnitaryOp] set {BinaryOperation set}` |
+| unitary_operation | `UnitaryOp set` |
+
+| scoped_expression | `LParen {expression} RParen` |
+| assignment | `Variable Equal expression` |
+
 ## 2.4 Code Generator
 
 The set-code-generator consists of three projects: set-analyzer, set-ir-generator, and set-target-generator.
